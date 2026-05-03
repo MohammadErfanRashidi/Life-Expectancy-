@@ -6,7 +6,6 @@ import joblib
 import numpy as np
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
-from typing import Dict
 from fastapi.staticfiles import StaticFiles
 
 # Initialize the app
