@@ -7,6 +7,7 @@ import numpy as np
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Dict
+from fastapi.staticfiles import StaticFiles
 
 # Initialize the app
 app = FastAPI(
@@ -115,3 +116,5 @@ def predict(raw_data:RawInput):
 @app.get('/health')
 def health():
     return {'status': 'ok'}
+
+app.mount("/", StaticFiles(directory = ".", html = True), name = 'static')

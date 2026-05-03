@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Life Expectancy Predictor</title>
+    <style>
+        /* Simple, clean styling – no external libraries */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            line-height: 1.6;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: #2c3e50;
+        }
+        input, select {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        button {
+            width: 100%;
+            padding: 0.8rem;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        #result {
+            margin-top: 2rem;
+            padding: 1rem;
+            border-radius: 6px;
+            font-size: 1.2rem;
+            text-align: center;
+            display: none;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .loading {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+        .note {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <h1>📊 Life Expectancy Predictor</h1>
+    <p style="text-align: center; color: #7f8c8d;">
+        Enter health and socioeconomic indicators.
+    </p>
+
+    <form id="prediction-form">
+        <div class="form-group">
+            <label for="income_comp">Income Composition of Resources</label>
+            <input type="number" id="income_comp" name="income_composition_of_resources" step="any" required placeholder="e.g. 0.6">
+        </div>
+
+        <div class="form-group">
+            <label for="hiv">HIV/AIDS</label>
+            <input type="number" id="hiv" name="hiv_aids" step="any" required placeholder="e.g. 0.1">
+        </div>
+
+        <div class="form-group">
+            <label for="schooling">Schooling (years)</label>
+            <input type="number" id="schooling" name="schooling" step="any" required placeholder="e.g. 12.0">
+        </div>
+
+        <div class="form-group">
+            <label for="adult_mort">Adult Mortality</label>
+            <input type="number" id="adult_mort" name="adult_mortality" step="any" required placeholder="e.g. 150">
+        </div>
+
+        <div class="form-group">
+            <label for="bmi">BMI</label>
+            <input type="number" id="bmi" name="bmi" step="any" required placeholder="e.g. 25.0">
+        </div>
+
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" name="status" required>
+                <option value="">-- Select --</option>
+                <option value="0">0 (Developing)</option>
+                <option value="1">1 (Developed)</option>
+            </select>
+        </div>
+
+        <button type="submit" id="predict-btn">Predict Life Expectancy</button>
+    </form>
+
+    <div id="result"></div>
+
+    <div class="note">
+        <strong>How it works:</strong> The backend automatically calculates derived features (squares, logs, interactions) and applies the trained model to predict life expectancy.
+    </div>
+
+    <script>
+        // No jQuery, no external libraries – just vanilla JavaScript
+
+        // The API is at the same address as this page (localhost:8000)
+        const API_URL = '/predict';
+
+        // Get DOM elements
+        const form = document.getElementById('prediction-form');
+        const resultDiv = document.getElementById('result');
+        const predictBtn = document.getElementById('predict-btn');
+
+        // Handle form submission
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();  // Stop the page from refreshing
+
+            // Disable button and show loading state
+            predictBtn.disabled = true;
+            predictBtn.textContent = 'Predicting...';
+            resultDiv.style.display = 'none';
+            resultDiv.className = '';
+
+            // Collect form data into an object
+            const formData = new FormData(form);
+            const rawData = {};
+            for (let [key, value] of formData.entries()) {
+                // Convert status to integer, others to float
+                rawData[key] = key === 'status' ? parseInt(value, 10) : parseFloat(value);
+            }
+
+            try {
+                // Send POST request to our API
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(rawData)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    // Backend returned an error (e.g., validation failed)
+                    throw new Error(data.detail || 'Prediction request failed.');
+                }
+
+                // Display the prediction
+                resultDiv.textContent = `Predicted Life Expectancy: ${data.predicted_life_expectancy} ${data.units}`;
+                resultDiv.className = 'success';
+            } catch (error) {
+                // Show error message
+                resultDiv.textContent = `Error: ${error.message}`;
+                resultDiv.className = 'error';
+            } finally {
+                // Re-enable button
+                predictBtn.disabled = false;
+                predictBtn.textContent = 'Predict Life Expectancy';
+                resultDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
