@@ -2,7 +2,7 @@
 
 ![Python](https://img.shields.io/badge/Python-3.9%2B-blue) ![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688) ![scikit-learn](https://img.shields.io/badge/scikit--learn-1.2%2B-orange) ![License: MIT](https://img.shields.io/badge/License-MIT-yellow)
 
-**Live Demo:** [https://life-expectancy-jvcx.onrender.com/](https://life-expectancy-predictor.onrender.com)
+**Live Demo:** [https://life-expectancy-jvcx.onrender.com/](https://life-expectancy-jvcx.onrender.com/)
 
 A machine learning project that predicts life expectancy (in years) using health and socioeconomic indicators.  
 A **Random Forest** model achieves **R² = 0.958** (RMSE = 1.93) and is served via a **FastAPI** web application.
