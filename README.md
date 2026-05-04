@@ -147,11 +147,17 @@ A **FastAPI** web app serves the model:
 
 ```
 .
+├── api.py
 ├── data
 │   ├── life_expectancy_data_cleaned.csv
 │   ├── life_expectancy_data.csv
 │   └── life_expectancy_data_processed.csv
+├── index.html
 ├── LICENSE
+├── model
+│   ├── feature_names.json
+│   ├── random_forest_model.pkl
+│   └── scaler.joblib
 ├── notebooks
 │   ├── cleaning.ipynb
 │   ├── EDA.ipynb
@@ -178,12 +184,6 @@ A **FastAPI** web app serves the model:
 ├── sql_EDA
 │   └── EDA.sql
 └── src
-    ├── api.py
-    ├── index.html
-    └── model
-        ├── feature_names.json
-        ├── random_forest_model.pkl
-        └── scaler.joblib
 ```
 
 ## 🛠️ Technologies Used
